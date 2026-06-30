@@ -38,6 +38,26 @@ class MaogaiQuestionDataTests(unittest.TestCase):
             with self.subTest(snippet=snippet):
                 self.assert_question_answer(snippet, expected_answer)
 
+    def test_question_86_is_removed(self):
+        self.assertFalse(
+            any(item["question"].startswith("86.") for item in questions),
+            "Question 86 should be removed from the bank.",
+        )
+
+    def test_eighteenth_congress_question_uses_same_domain_options(self):
+        matches = [item for item in questions if "2012年党的十八大将科学发展观" in item["question"]]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(
+            matches[0]["options"],
+            [
+                "A. 党必须长期坚持的指导思想",
+                "B. 新时期党的基本路线",
+                "C. 马克思主义中国化时代化的第一次历史性飞跃",
+                "D. 中国特色社会主义理论体系的开篇之作",
+            ],
+        )
+        self.assertEqual(matches[0]["answer"], "A")
+
     def test_question_bank_schema_is_valid_and_uses_only_verified_items(self):
         self.assertGreaterEqual(len(questions), 60)
         uncertain_markers = ("不确定", "疑似", "具体忘了", "不知道是不是", "猜测", "xxx", "干扰项")
