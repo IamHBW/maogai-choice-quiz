@@ -40,7 +40,7 @@ class MaogaiQuestionDataTests(unittest.TestCase):
 
     def test_question_bank_schema_is_valid_and_uses_only_verified_items(self):
         self.assertGreaterEqual(len(questions), 60)
-        uncertain_markers = ("不确定", "疑似", "具体忘了", "不知道是不是", "猜测", "xxx")
+        uncertain_markers = ("不确定", "疑似", "具体忘了", "不知道是不是", "猜测", "xxx", "干扰项")
         valid_letters = tuple("ABCDE")
 
         for index, question in enumerate(questions, start=1):
@@ -58,6 +58,8 @@ class MaogaiQuestionDataTests(unittest.TestCase):
                 expected_labels = valid_letters[: len(options)]
                 for label, option in zip(expected_labels, options):
                     self.assertTrue(option.startswith(f"{label}. "), option)
+                    for marker in uncertain_markers:
+                        self.assertNotIn(marker, option)
 
                 answer = question.get("answer", "")
                 self.assertEqual(answer, "".join(sorted(answer)))
