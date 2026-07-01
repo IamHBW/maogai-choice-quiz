@@ -68,6 +68,26 @@ class MaogaiQuestionDataTests(unittest.TestCase):
 
         self.assertLess(first_autumn_winter_index, first_meeting_document_index)
 
+    def test_24_25_autumn_winter_questions_are_inserted_before_25_26_items(self):
+        autumn_winter_questions = [
+            item
+            for item in questions
+            if "24-25秋冬回忆卷.md" in item["explanation"]
+        ]
+        self.assertEqual(len(autumn_winter_questions), 16)
+        self.assertTrue(
+            all("选项为按教材和题库风格补全" in item["explanation"] for item in autumn_winter_questions)
+        )
+
+        first_24_25_index = questions.index(autumn_winter_questions[0])
+        first_25_26_index = next(
+            index
+            for index, item in enumerate(questions)
+            if "25-26秋冬回忆卷_答案.md" in item["explanation"]
+        )
+
+        self.assertLess(first_24_25_index, first_25_26_index)
+
     def test_eighteenth_congress_question_uses_same_domain_options(self):
         matches = [item for item in questions if "2012年党的十八大将科学发展观" in item["question"]]
         self.assertEqual(len(matches), 1)
