@@ -38,11 +38,35 @@ class MaogaiQuestionDataTests(unittest.TestCase):
             with self.subTest(snippet=snippet):
                 self.assert_question_answer(snippet, expected_answer)
 
-    def test_question_86_is_removed(self):
+    def test_removed_mechanical_question_stays_removed(self):
         self.assertFalse(
-            any(item["question"].startswith("86.") for item in questions),
-            "Question 86 should be removed from the bank.",
+            any(
+                "机械" in item["question"]
+                or any("机械" in option for option in item.get("options", []))
+                for item in questions
+            ),
+            "Unrelated mechanical-engineering content should not be in the bank.",
         )
+
+    def test_25_26_autumn_winter_questions_are_inserted_before_meeting_document_items(self):
+        autumn_winter_questions = [
+            item
+            for item in questions
+            if "25-26秋冬回忆卷_答案.md" in item["explanation"]
+        ]
+        self.assertEqual(len(autumn_winter_questions), 24)
+        self.assertTrue(
+            all("选项为按教材和题库风格补全" in item["explanation"] for item in autumn_winter_questions)
+        )
+
+        first_autumn_winter_index = questions.index(autumn_winter_questions[0])
+        first_meeting_document_index = next(
+            index
+            for index, item in enumerate(questions)
+            if "重要会议和文献.md" in item["explanation"]
+        )
+
+        self.assertLess(first_autumn_winter_index, first_meeting_document_index)
 
     def test_eighteenth_congress_question_uses_same_domain_options(self):
         matches = [item for item in questions if "2012年党的十八大将科学发展观" in item["question"]]
